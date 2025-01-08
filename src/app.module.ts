@@ -3,9 +3,10 @@ import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './resources/filters/http-exception/http-exception.filter';
 import { LoggerInterceptor } from './resources/interceptors/logger/logger.interceptor';
 import { DatabaseModule } from './database/database.module';
+import { EventModule } from './modules/event/event.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, EventModule],
   controllers: [],
   providers: [
     {
