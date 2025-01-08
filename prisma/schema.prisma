@@ -16,7 +16,7 @@ datasource db {
 model Event {
   id     Int      @id @default(autoincrement())
   name   String
-  date   DateTime
+  date   String
   tables Tables[]
 
   createdAt DateTime @default(now())
