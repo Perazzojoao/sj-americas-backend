@@ -20,7 +20,7 @@ export class EventRepository implements EventAbstractRepository {
     }
   }
 
-  async findAllEvent(): Promise<EventEntity[]> {
+  async findAllEvents(): Promise<EventEntity[]> {
     try {
       return await this.prisma.event.findMany();
     } catch (error) {
