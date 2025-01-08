@@ -1,5 +1,6 @@
 import {
   IsDateString,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   MaxLength,
@@ -24,10 +25,7 @@ export class CreateEventDto {
   date: string;
 
   @IsNotEmpty()
-  @IsNumber(
-    { allowInfinity: false, allowNaN: false, maxDecimalPlaces: 3 },
-    { message: 'Tables must be a number' },
-  )
+  @IsInt({ message: 'Tables must be a integer' })
   @Min(1, { message: 'Tables must be greater than 0' })
   tables: number;
 }
