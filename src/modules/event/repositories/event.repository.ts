@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { EventAbstractRepository } from './event-abstract.repository';
 import { EventEntity } from '../entities/event.entity';
 import { DatabaseService } from 'src/database/database.service';
@@ -7,11 +11,19 @@ import { DatabaseService } from 'src/database/database.service';
 export class EventRepository implements EventAbstractRepository {
   constructor(private readonly prisma: DatabaseService) {}
 
-  async createEvent(eventEntity: EventEntity): Promise<EventEntity> {
+  async createEvent(
+    eventEntity: EventEntity,
+    tables: number,
+  ): Promise<EventEntity> {
     try {
       return await this.prisma.event.create({
         data: {
           ...eventEntity,
+          tables: {
+            createMany: {
+              data: Array.from({ length: tables }).map((_, index) => ({ number: index + 1 })),
+            }
+          }
         },
       });
     } catch (error) {

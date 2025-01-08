@@ -14,8 +14,9 @@ export class EventService {
 
   async create(createEventDto: CreateEventDto) {
     const newEvent = new EventEntity(createEventDto);
+    const tables = createEventDto.tables
     const response = {
-      event: await this.eventRepository.createEvent(newEvent),
+      event: await this.eventRepository.createEvent(newEvent, tables),
     };
 
     if (!response.event) {
