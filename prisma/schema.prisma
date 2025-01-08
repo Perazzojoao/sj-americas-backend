@@ -26,7 +26,7 @@ model Event {
 model Tables {
   id      Int     @id @default(autoincrement())
   number  Int
-  seats   Int     @default(4)
+  seats   Int     @default(8)
   owner   Int?
   eventId Int
   event   Event   @relation(fields: [eventId], references: [id])
