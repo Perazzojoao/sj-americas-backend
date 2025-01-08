@@ -29,7 +29,7 @@ export class EventRepository implements EventAbstractRepository {
     }
   }
 
-  async findOneEvent(id: number): Promise<EventEntity> {
+  async findEventById(id: number): Promise<EventEntity> {
     try {
       return await this.prisma.event.findUnique({
         where: {
