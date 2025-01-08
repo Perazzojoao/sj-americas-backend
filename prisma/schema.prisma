@@ -29,7 +29,7 @@ model Tables {
   seats   Int     @default(8)
   owner   Int?
   eventId Int
-  event   Event   @relation(fields: [eventId], references: [id])
+  event   Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
   isTaken Boolean @default(false)
   isPaid  Boolean @default(false)
 
