@@ -4,9 +4,10 @@ import { HttpExceptionFilter } from './resources/filters/http-exception/http-exc
 import { LoggerInterceptor } from './resources/interceptors/logger/logger.interceptor';
 import { DatabaseModule } from './database/database.module';
 import { EventModule } from './modules/event/event.module';
+import { TablesModule } from './modules/tables/tables.module';
 
 @Module({
-  imports: [DatabaseModule, EventModule],
+  imports: [DatabaseModule, EventModule, TablesModule],
   controllers: [],
   providers: [
     {
