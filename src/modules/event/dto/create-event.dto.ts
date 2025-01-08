@@ -8,6 +8,6 @@ export class CreateEventDto {
   name: string;
 
   @IsNotEmpty()
-  @IsDateString({strict: true}, { message: 'Invalid date format. Correct format: YYYY-MM-DD' })
+  @IsDateString({strict: true}, { message: 'Invalid date format. Expected ISO-8601 DateTime' })
   date: Date;
 }
