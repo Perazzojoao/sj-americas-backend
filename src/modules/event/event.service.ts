@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -14,7 +15,7 @@ export class EventService {
 
   async create(createEventDto: CreateEventDto) {
     const newEvent = new EventEntity(createEventDto);
-    const tables = createEventDto.tables
+    const tables = createEventDto.table_count;
     const response = {
       event: await this.eventRepository.createEvent(newEvent, tables),
     };
@@ -44,13 +45,33 @@ export class EventService {
   }
 
   async update(id: number, updateEventDto: UpdateEventDto) {
-    const targetEvent = await this.eventRepository.findEventById(id);
+    const targetEvent = await this.eventRepository.findEventById(id, true);
 
     if (!targetEvent) {
       throw new NotFoundException('Event not found');
     }
 
-    Object.assign(targetEvent, updateEventDto);
+    Object.assign(targetEvent, () => {
+      const { table_count, ...dataDto } = updateEventDto;
+      return dataDto;
+    });
+
+    if (updateEventDto.table_count !== undefined) {
+      const tableCount = targetEvent.tables.length;
+      const tables = updateEventDto.table_count;
+      if (tableCount < tables) {
+        await this.eventRepository.addTables(id, tables - tableCount);
+      } else if (tableCount > tables) {
+        targetEvent.tables.forEach((table) => {
+          if (table.isTaken) {
+            throw new BadRequestException(
+              `Cannot remove table with reservations. Table ${table.number} is taken`,
+            );
+          }
+        });
+        await this.eventRepository.removeTables(id, tableCount - tables);
+      }
+    }
 
     const response = {
       event: await this.eventRepository.updateEvent(id, targetEvent),
