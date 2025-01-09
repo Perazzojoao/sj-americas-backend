@@ -6,10 +6,12 @@ export abstract class EventAbstractRepository {
     tables: number,
   ): Promise<EventEntity>;
   abstract findAllEvents(): Promise<EventEntity[]>;
-  abstract findEventById(id: number): Promise<EventEntity>;
+  abstract findEventById(id: number, includeTables?: boolean): Promise<EventEntity>;
   abstract updateEvent(
     id: number,
     eventEntity: EventEntity,
   ): Promise<EventEntity>;
+  abstract addTables(eventId: number, quantity: number): Promise<void>;
+  abstract removeTables(eventId: number, quantity: number): Promise<void>
   abstract removeEvent(id: number): Promise<EventEntity>;
 }

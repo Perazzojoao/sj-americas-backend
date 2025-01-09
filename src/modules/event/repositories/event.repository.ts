@@ -6,6 +6,7 @@ import {
 import { EventAbstractRepository } from './event-abstract.repository';
 import { EventEntity } from '../entities/event.entity';
 import { DatabaseService } from 'src/database/database.service';
+import { TableEntity } from 'src/modules/tables/entities/table.entity';
 
 @Injectable()
 export class EventRepository implements EventAbstractRepository {
@@ -21,9 +22,11 @@ export class EventRepository implements EventAbstractRepository {
           ...eventEntity,
           tables: {
             createMany: {
-              data: Array.from({ length: tables }).map((_, index) => ({ number: index + 1 })),
-            }
-          }
+              data: Array.from({ length: tables }).map((_, index) => ({
+                number: index + 1,
+              })),
+            },
+          },
         },
       });
     } catch (error) {
@@ -41,11 +44,17 @@ export class EventRepository implements EventAbstractRepository {
     }
   }
 
-  async findEventById(id: number): Promise<EventEntity> {
+  async findEventById(
+    id: number,
+    includeTables: boolean = false,
+  ): Promise<EventEntity> {
     try {
       return await this.prisma.event.findUnique({
         where: {
           id,
+        },
+        include: {
+          tables: includeTables,
         },
       });
     } catch (error) {
@@ -66,11 +75,47 @@ export class EventRepository implements EventAbstractRepository {
         data: {
           ...eventEntity,
           updatedAt: new Date(),
+          tables: {},
         },
       });
     } catch (error) {
       console.log(error.message);
       throw new InternalServerErrorException('Failed to update event');
+    }
+  }
+
+  async addTables(eventId: number, quantity: number): Promise<void> {
+    try {
+      await this.prisma.table.createMany({
+        data: Array.from({ length: quantity }).map((_, index) => ({
+          eventId,
+          number: index + 2,
+        })),
+      });
+    } catch (error) {
+      console.log(error.message);
+      throw new InternalServerErrorException('Failed to add tables');
+    }
+  }
+
+  async removeTables(eventId: number, quantity: number): Promise<void> {
+    try {
+      const tables = await this.prisma.table.findMany({
+        where: { eventId },
+        orderBy: { number: 'desc' },
+        take: quantity,
+      });
+
+      const tableIds = tables.map((table) => table.id);
+
+      await this.prisma.table.deleteMany({
+        where: {
+          id: { in: tableIds },
+        },
+      });
+    } catch (error) {
+      console.log(error.message);
+      throw new InternalServerErrorException('Failed to remove tables');
     }
   }
 
