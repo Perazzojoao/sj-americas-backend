@@ -10,7 +10,7 @@ import { TablesService } from './tables.service';
 import { UpdateTableDto } from './dto/update-table.dto';
 import { DefaultResponse } from 'src/lib/default-response';
 
-@Controller('tables')
+@Controller('table')
 export class TablesController extends DefaultResponse {
   constructor(private readonly tablesService: TablesService) {
     super();

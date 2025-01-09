@@ -1,11 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
-import { TablesAbstractRepository } from './repositories/tables-abstract.repository';
+import { TableAbstractRepository } from './repositories/tables-abstract.repository';
 
 @Injectable()
 export class TablesService {
-  constructor(private readonly tablesRepository: TablesAbstractRepository) {}
+  constructor(private readonly tablesRepository: TableAbstractRepository) {}
 
   async findAll() {
     const result = {

@@ -1,6 +1,6 @@
-import { Tables } from '@prisma/client';
+import { Table } from '@prisma/client';
 
-export class TableEntity implements Tables {
+export class TableEntity implements Table {
   id: number;
   number: number;
   seats: number;
