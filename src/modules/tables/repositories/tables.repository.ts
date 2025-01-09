@@ -1,14 +1,15 @@
-import { InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TableEntity } from '../entities/table.entity';
-import { TablesAbstractRepository } from './tables-abstract.repository';
+import { TableAbstractRepository } from './tables-abstract.repository';
 import { DatabaseService } from 'src/database/database.service';
 
-export class TablesRepository implements TablesAbstractRepository {
+@Injectable()
+export class TableRepository implements TableAbstractRepository {
   constructor(private readonly prisma: DatabaseService) {}
 
   async createTable(tableEntity: TableEntity): Promise<TableEntity> {
     try {
-      return await this.prisma.tables.create({
+      return await this.prisma.table.create({
         data: tableEntity,
       });
     } catch (error) {
@@ -19,7 +20,7 @@ export class TablesRepository implements TablesAbstractRepository {
 
   async findAllTables(): Promise<TableEntity[]> {
     try {
-      return await this.prisma.tables.findMany();
+      return await this.prisma.table.findMany();
     } catch (error) {
       console.log(error.message);
       throw new InternalServerErrorException('Failed to fetch table list');
@@ -28,7 +29,7 @@ export class TablesRepository implements TablesAbstractRepository {
 
   async findTableById(id: number): Promise<TableEntity> {
     try {
-      return await this.prisma.tables.findUnique({
+      return await this.prisma.table.findUnique({
         where: {
           id,
         },
@@ -44,7 +45,7 @@ export class TablesRepository implements TablesAbstractRepository {
     tableEntity: TableEntity,
   ): Promise<TableEntity> {
     try {
-      return await this.prisma.tables.update({
+      return await this.prisma.table.update({
         where: {
           id,
         },
@@ -61,7 +62,7 @@ export class TablesRepository implements TablesAbstractRepository {
 
   async deleteTable(id: number): Promise<TableEntity> {
     try {
-      return await this.prisma.tables.delete({
+      return await this.prisma.table.delete({
         where: {
           id,
         },
