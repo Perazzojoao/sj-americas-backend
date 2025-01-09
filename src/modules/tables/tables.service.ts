@@ -1,18 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
+import { TablesAbstractRepository } from './repositories/tables-abstract.repository';
 
 @Injectable()
 export class TablesService {
-  findAll() {
-    return `This action returns all tables`;
+  constructor(private readonly tablesRepository: TablesAbstractRepository) {}
+
+  async findAll() {
+    const result = {
+      tables: await this.tablesRepository.findAllTables(),
+    };
+    return result;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} table`;
+  async findOne(id: number) {
+    const result = {
+      table: await this.tablesRepository.findTableById(id),
+    };
+    if (!result.table) {
+      throw new NotFoundException('Table not found');
+    }
+    return result;
   }
 
-  update(id: number, updateTableDto: UpdateTableDto) {
-    return `This action updates a #${id} table`;
+  async update(id: number, updateTableDto: UpdateTableDto) {
+    const targetTable = await this.tablesRepository.findTableById(id);
+    if (!targetTable) {
+      throw new Error('Table not found');
+    }
+
+    Object.assign(targetTable, updateTableDto);
+
+    const result = {
+      table: await this.tablesRepository.updateTable(id, targetTable),
+    };
+    return result;
   }
 }

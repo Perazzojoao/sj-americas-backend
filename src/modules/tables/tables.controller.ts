@@ -4,26 +4,33 @@ import {
   Body,
   Patch,
   Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { TablesService } from './tables.service';
 import { UpdateTableDto } from './dto/update-table.dto';
+import { DefaultResponse } from 'src/lib/default-response';
 
 @Controller('tables')
-export class TablesController {
-  constructor(private readonly tablesService: TablesService) {}
+export class TablesController extends DefaultResponse {
+  constructor(private readonly tablesService: TablesService) {
+    super();
+  }
 
   @Get()
-  findAll() {
-    return this.tablesService.findAll();
+  async findAll() {
+    const response = await this.tablesService.findAll();
+    return this.success(response, 'Tables fetched successfully');
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tablesService.findOne(+id);
+  async findOne(@Param('id', ParseIntPipe) id: string) {
+    const response = await this.tablesService.findOne(+id);
+    return this.success(response, 'Table fetched successfully');
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTableDto: UpdateTableDto) {
-    return this.tablesService.update(+id, updateTableDto);
+  async update(@Param('id', ParseIntPipe) id: string, @Body() updateTableDto: UpdateTableDto) {
+    const response = await this.tablesService.update(+id, updateTableDto);
+    return this.success(response, 'Table updated successfully');
   }
 }
