@@ -3,7 +3,6 @@ import { EventService } from './event.service';
 import { EventController } from './event.controller';
 import { EventAbstractRepository } from './repositories/event-abstract.repository';
 import { EventRepository } from './repositories/event.repository';
-import { DatabaseService } from 'src/database/database.service';
 
 @Module({
   controllers: [EventController],
@@ -13,7 +12,6 @@ import { DatabaseService } from 'src/database/database.service';
       provide: EventAbstractRepository,
       useClass: EventRepository,
     },
-    DatabaseService,
   ],
 })
 export class EventModule {}
