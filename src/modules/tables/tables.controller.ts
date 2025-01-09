@@ -5,6 +5,7 @@ import {
   Patch,
   Param,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { TablesService } from './tables.service';
 import { UpdateTableDto } from './dto/update-table.dto';
@@ -17,8 +18,8 @@ export class TablesController extends DefaultResponse {
   }
 
   @Get()
-  async findAll() {
-    const response = await this.tablesService.findAll();
+  async findAll(@Query('eventId') eventId: number) {
+    const response = await this.tablesService.findAll(eventId);
     return this.success(response, 'Tables fetched successfully');
   }
 

@@ -6,9 +6,9 @@ import { TableAbstractRepository } from './repositories/tables-abstract.reposito
 export class TablesService {
   constructor(private readonly tablesRepository: TableAbstractRepository) {}
 
-  async findAll() {
+  async findAll(eventId?: number) {
     const result = {
-      tables: await this.tablesRepository.findAllTables(),
+      tables: await this.tablesRepository.findAllTables(eventId),
     };
     return result;
   }
@@ -30,6 +30,12 @@ export class TablesService {
     }
 
     Object.assign(targetTable, updateTableDto);
+
+    if (updateTableDto.owner) {
+      targetTable.isTaken = true;
+    } else if (!targetTable.owner) {
+      targetTable.isTaken = false;
+    }
 
     const result = {
       table: await this.tablesRepository.updateTable(id, targetTable),

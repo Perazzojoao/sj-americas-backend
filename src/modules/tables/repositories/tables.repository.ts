@@ -18,9 +18,11 @@ export class TableRepository implements TableAbstractRepository {
     }
   }
 
-  async findAllTables(): Promise<TableEntity[]> {
+  async findAllTables(eventId?: number): Promise<TableEntity[]> {
     try {
-      return await this.prisma.table.findMany();
+      return await this.prisma.table.findMany({
+        where: eventId ? { eventId } : {},
+      });
     } catch (error) {
       console.log(error.message);
       throw new InternalServerErrorException('Failed to fetch table list');

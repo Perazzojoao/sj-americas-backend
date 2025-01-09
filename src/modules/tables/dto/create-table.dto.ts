@@ -8,10 +8,6 @@ export class CreateTableDto {
   owner?: number;
 
   @IsOptional()
-  @IsBoolean({ message: 'is_taken must be a boolean' })
-  is_taken?: boolean;
-
-  @IsOptional()
   @IsBoolean({ message: 'is_paid must be a boolean' })
   is_paid?: boolean;
 
