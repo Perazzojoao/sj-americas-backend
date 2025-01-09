@@ -13,5 +13,6 @@ import { TableRepository } from './repositories/tables.repository';
       useClass: TableRepository,
     },
   ],
+  exports: [TablesService]
 })
 export class TablesModule {}
