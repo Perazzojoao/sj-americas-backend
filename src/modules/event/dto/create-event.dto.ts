@@ -27,5 +27,5 @@ export class CreateEventDto {
   @IsNotEmpty()
   @IsInt({ message: 'Tables must be a integer' })
   @Min(1, { message: 'Tables must be greater than 0' })
-  tables: number;
+  table_count: number;
 }
