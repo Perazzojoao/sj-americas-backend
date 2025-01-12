@@ -17,6 +17,7 @@ model Event {
   id     Int      @id @default(autoincrement())
   name   String
   date   String
+  tableCount Int
   tables Table[]
 
   createdAt DateTime @default(now())
