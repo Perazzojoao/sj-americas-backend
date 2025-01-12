@@ -5,11 +5,14 @@ export class EventEntity implements Event {
   id: number;
   name: string;
   date: string;
+  tableCount: number;
   createdAt: Date;
   updatedAt: Date;
   tables?: TableEntity[];
 
-  constructor(partial: Partial<EventEntity>) {
-    Object.assign(this, partial);
+  constructor(name: string, date: string, tableCount: number) {
+    this.name = name;
+    this.date = date;
+    this.tableCount = tableCount;
   }
 }

@@ -14,10 +14,10 @@ export class EventService {
   constructor(private readonly eventRepository: EventAbstractRepository) {}
 
   async create(createEventDto: CreateEventDto) {
-    const newEvent = new EventEntity(createEventDto);
-    const tables = createEventDto.table_count;
+    const { name, date, table_count } = createEventDto;
+    const newEvent = new EventEntity(name, date, table_count);
     const response = {
-      event: await this.eventRepository.createEvent(newEvent, tables),
+      event: await this.eventRepository.createEvent(newEvent),
     };
 
     if (!response.event) {
@@ -51,16 +51,16 @@ export class EventService {
       throw new NotFoundException('Event not found');
     }
 
-    Object.assign(targetEvent, () => {
+    Object.assign(targetEvent, (() => {
       const { table_count, ...dataDto } = updateEventDto;
       return dataDto;
-    });
+    })());
 
     if (updateEventDto.table_count !== undefined) {
       const tableCount = targetEvent.tables.length;
       const tables = updateEventDto.table_count;
       if (tableCount < tables) {
-        await this.eventRepository.addTables(id, tables - tableCount);
+        await this.eventRepository.addTables(id, tables - tableCount, tableCount);
       } else if (tableCount > tables) {
         targetEvent.tables.forEach((table) => {
           if (table.isTaken) {
@@ -73,6 +73,7 @@ export class EventService {
       }
     }
 
+    targetEvent.tableCount = updateEventDto.table_count;
     const response = {
       event: await this.eventRepository.updateEvent(id, targetEvent),
     };

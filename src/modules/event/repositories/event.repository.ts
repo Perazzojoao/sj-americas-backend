@@ -6,25 +6,23 @@ import {
 import { EventAbstractRepository } from './event-abstract.repository';
 import { EventEntity } from '../entities/event.entity';
 import { DatabaseService } from 'src/database/database.service';
-import { TableEntity } from 'src/modules/tables/entities/table.entity';
 
 @Injectable()
 export class EventRepository implements EventAbstractRepository {
   constructor(private readonly prisma: DatabaseService) {}
 
-  async createEvent(
-    eventEntity: EventEntity,
-    tables: number,
-  ): Promise<EventEntity> {
+  async createEvent(eventEntity: EventEntity): Promise<EventEntity> {
     try {
       return await this.prisma.event.create({
         data: {
           ...eventEntity,
           tables: {
             createMany: {
-              data: Array.from({ length: tables }).map((_, index) => ({
-                number: index + 1,
-              })),
+              data: Array.from({ length: eventEntity.tableCount }).map(
+                (_, index) => ({
+                  number: index + 1,
+                }),
+              ),
             },
           },
         },
@@ -84,12 +82,16 @@ export class EventRepository implements EventAbstractRepository {
     }
   }
 
-  async addTables(eventId: number, quantity: number): Promise<void> {
+  async addTables(
+    eventId: number,
+    quantity: number,
+    startNumber: number,
+  ): Promise<void> {
     try {
       await this.prisma.table.createMany({
         data: Array.from({ length: quantity }).map((_, index) => ({
           eventId,
-          number: index + 2,
+          number: startNumber + index + 1,
         })),
       });
     } catch (error) {
