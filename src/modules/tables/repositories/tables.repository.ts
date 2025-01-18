@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TableEntity } from '../entities/table.entity';
 import { TableAbstractRepository } from './tables-abstract.repository';
 import { DatabaseService } from 'src/database/database.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TableRepository implements TableAbstractRepository {
@@ -59,6 +60,29 @@ export class TableRepository implements TableAbstractRepository {
     } catch (error) {
       console.log(error.message);
       throw new InternalServerErrorException('Failed to update table');
+    }
+  }
+
+  async updateMultipleTables(
+    idList: number[],
+    data: {
+      owner?: number;
+      is_paid?: boolean;
+      seats?: number;
+    },
+  ): Promise<void> {
+    try {
+      await this.prisma.table.updateMany({
+        where: {
+          id: {
+            in: idList,
+          },
+        },
+        data,
+      });
+    } catch (error) {
+      console.log(error.message);
+      throw new InternalServerErrorException('Failed to update tables');
     }
   }
 

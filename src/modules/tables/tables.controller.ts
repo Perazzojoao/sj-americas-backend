@@ -29,6 +29,12 @@ export class TablesController extends DefaultResponse {
     return this.success(response, 'Table fetched successfully');
   }
 
+  @Patch('multiples')
+  async updateMultiple(@Body() updateTableDto: UpdateTableDto) {
+    const response = await this.tablesService.updateMultiple(updateTableDto);
+    return this.success(response, 'Tables updated successfully');
+  }
+
   @Patch(':id')
   async update(@Param('id', ParseIntPipe) id: string, @Body() updateTableDto: UpdateTableDto) {
     const response = await this.tablesService.update(+id, updateTableDto);
