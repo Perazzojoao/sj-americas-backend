@@ -30,6 +30,21 @@ export class TableRepository implements TableAbstractRepository {
     }
   }
 
+  async findAllTablesByIds(idList: number[]): Promise<TableEntity[]> {
+    try {
+      return await this.prisma.table.findMany({
+        where: {
+          id: {
+            in: idList,
+          },
+        }
+      });
+    } catch (error) {
+      console.log(error.message);
+      throw new InternalServerErrorException('Failed to fetch table list');
+    }
+  }
+
   async findTableById(id: number): Promise<TableEntity> {
     try {
       return await this.prisma.table.findUnique({
@@ -67,7 +82,8 @@ export class TableRepository implements TableAbstractRepository {
     idList: number[],
     data: {
       owner?: number;
-      is_paid?: boolean;
+      isTaken?: boolean;
+      isPaid?: boolean;
       seats?: number;
     },
   ): Promise<void> {
