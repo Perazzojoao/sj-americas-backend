@@ -6,6 +6,7 @@ import {
 import { TableAbstractRepository } from './repositories/tables-abstract.repository';
 import { UpdateTableDto } from './dto/update-table.dto';
 import { UpdateEventDto } from '../event/dto/update-event.dto';
+import { TableEntity } from './entities/table.entity';
 
 @Injectable()
 export class TablesService {
@@ -32,6 +33,10 @@ export class TablesService {
     const targetTable = await this.tablesRepository.findTableById(id);
     if (!targetTable) {
       throw new NotFoundException('Table not found');
+    }
+
+    if (updateTableDto.owner === null && updateTableDto.is_paid) {
+      throw new BadRequestException('Cannot change owner of a paid table');
     }
 
     if (updateTableDto.owner !== targetTable.owner && targetTable.isPaid) {
@@ -65,9 +70,35 @@ export class TablesService {
   }
 
   async updateMultiple(updateTableDto: UpdateTableDto) {
-    const {table_list_ids, ...data} = updateTableDto;
+    const { table_list_ids, is_paid, ...data } = updateTableDto;
+    const targetTables =
+      await this.tablesRepository.findAllTablesByIds(table_list_ids);
+    if (targetTables.length === 0) {
+      throw new NotFoundException('Tables not found');
+    }
 
-    await this.tablesRepository.updateMultipleTables(table_list_ids, data);
+    if (data.owner === null && is_paid) {
+      throw new BadRequestException('Cannot change owner of a paid table');
+    }
+
+    const tableData = new TableEntity(data);
+    tableData.isTaken = !!data.owner;
+
+    const isAnyTablePaid = targetTables.some((table) => table.isPaid);
+    const isAllTablesTaken = targetTables.every((table) => table.isTaken);
+    const isSameOwner = (owner: number) => targetTables.every((table) => table.owner === owner);
+
+    if (isAnyTablePaid && !isSameOwner(data.owner)) {
+      throw new BadRequestException('Cannot change owner of a paid table');
+    }
+
+    if (is_paid && !isAnyTablePaid && isAllTablesTaken) {
+      tableData.isPaid = is_paid;
+    } else if (!is_paid && isAllTablesTaken) {
+      tableData.isPaid = is_paid;
+    }
+
+    await this.tablesRepository.updateMultipleTables(table_list_ids, tableData);
 
     const result = {
       table_ids: table_list_ids,
