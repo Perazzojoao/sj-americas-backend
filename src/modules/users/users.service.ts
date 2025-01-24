@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersAbstractRepository } from './repositories/users-abstract.repository';
@@ -25,19 +29,45 @@ export class UsersService {
     return response;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return {
+      user_list: await this.usersRepository.findAllUsers(),
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    return {
+      user: await this.usersRepository.findUserById(id),
+    };
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const targetUser = await this.usersRepository.findUserById(id);
+    if (!targetUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    Object.assign(targetUser, updateUserDto);
+
+    const { password, ...userUpdated } = await this.usersRepository.updateUser(
+      id,
+      targetUser,
+    );
+
+    return {
+      user: userUpdated,
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    const targetUser = await this.usersRepository.findUserById(id);
+    if (!targetUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    const { password, ...user } = await this.usersRepository.deleteUser(id);
+    return {
+      user,
+    };
   }
 }

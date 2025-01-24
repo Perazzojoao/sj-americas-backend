@@ -36,21 +36,25 @@ export class UsersController extends DefaultResponse {
 
   @Get()
   async findAll() {
-    return this.usersService.findAll();
+    const response = await this.usersService.findAll();
+    return this.success(response, 'User list fetched successfully');
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param('id') id: number) {
+    const response = await this.usersService.findOne(id);
+    return this.success(response, 'User fetched successfully');
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
+    const response = await this.usersService.update(id, updateUserDto);
+    return this.success(response, 'User updated successfully');
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  async remove(@Param('id') id: number) {
+    const response = await this.usersService.remove(id);
+    return this.success(response, 'User deleted successfully');
   }
 }
