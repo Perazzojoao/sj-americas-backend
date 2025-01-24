@@ -5,9 +5,19 @@ import { LoggerInterceptor } from './resources/interceptors/logger/logger.interc
 import { DatabaseModule } from './database/database.module';
 import { EventModule } from './modules/event/event.module';
 import { TablesModule } from './modules/tables/tables.module';
+import { UsersModule } from './modules/users/users.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [DatabaseModule, EventModule, TablesModule],
+  imports: [
+    DatabaseModule,
+    EventModule,
+    TablesModule,
+    UsersModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
   controllers: [],
   providers: [
     {
