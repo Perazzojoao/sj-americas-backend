@@ -12,6 +12,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DefaultResponse } from 'src/lib/default-response';
+import { PasswordHashPipe } from 'src/resources/pipes/password-hash.pipe';
 
 @Controller('users')
 export class UsersController extends DefaultResponse {
@@ -20,7 +21,11 @@ export class UsersController extends DefaultResponse {
   }
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @Body('password', PasswordHashPipe) hash: string,
+  ) {
+    createUserDto.password = hash;
     const response = await this.usersService.create(createUserDto);
     return this.success(
       response,
