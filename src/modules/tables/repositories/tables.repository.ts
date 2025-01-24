@@ -2,7 +2,6 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TableEntity } from '../entities/table.entity';
 import { TableAbstractRepository } from './tables-abstract.repository';
 import { DatabaseService } from 'src/database/database.service';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TableRepository implements TableAbstractRepository {
