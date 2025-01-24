@@ -7,7 +7,7 @@ import { EventModule } from './modules/event/event.module';
 import { TablesModule } from './modules/tables/tables.module';
 import { UsersModule } from './modules/users/users.module';
 import { ConfigModule } from '@nestjs/config';
-import { JwtTokenModule } from './jwt/jwt-token/jwt-token.module';
+import { JwtTokenModule } from './jwt/jwt-token.module';
 
 @Module({
   imports: [
