@@ -1,7 +1,14 @@
-import { CallHandler, ConsoleLogger, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import {
+  CallHandler,
+  ConsoleLogger,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
 import { yellow } from 'colors';
 import { Observable, tap } from 'rxjs';
 import { Request } from 'express';
+import { RequestWithUser } from 'src/resources/guards/auth.guard';
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
@@ -9,14 +16,14 @@ export class LoggerInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const httpContext = context.switchToHttp();
-    const request = httpContext.getRequest<Request>();
+    const request = httpContext.getRequest<Request | RequestWithUser>();
     const userAgent = request.get('user-agent') || '';
     const { ip } = request;
     const now = Date.now();
     return next.handle().pipe(
       tap(() => {
         this.logger.log(
-          `${userAgent} ${ip}: ${request.method} ${request.url} ` +
+          `${'user' in request ? ` User ID: ${request.user.sub}` : ''} - ${userAgent} ${ip}: ${request.method} ${request.url} ` +
             yellow(`+${Date.now() - now}ms`),
           'Logger',
         );
