@@ -18,9 +18,13 @@ export class UsersRepository implements UsersAbstractRepository {
     }
   }
 
-  async findAllUsers(): Promise<UserEntity[]> {
+  async findAllUsers(): Promise<Partial<UserEntity>[]> {
     try {
-      return await this.prisma.user.findMany();
+      return await this.prisma.user.findMany({
+        omit: {
+          password: true,
+        },
+      });
     } catch (error) {
       console.log(error.message);
       throw new InternalServerErrorException('Failed to fetch user list');
