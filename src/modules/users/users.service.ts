@@ -14,7 +14,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     const newUser = new UserEntity(createUserDto);
-    const isUserAlreadyExists = this.usersRepository.findUserByName(
+    const isUserAlreadyExists = await this.usersRepository.findUserByName(
       newUser.user_name,
     );
     if (isUserAlreadyExists) {
