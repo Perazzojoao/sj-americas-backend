@@ -41,6 +41,12 @@ export class UsersService {
     };
   }
 
+  async findOneByUserName(user_name: string) {
+    return {
+      user: await this.usersRepository.findUserByName(user_name),
+    };
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     const targetUser = await this.usersRepository.findUserById(id);
     if (!targetUser) {
