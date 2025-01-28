@@ -8,6 +8,7 @@ import { TablesModule } from './modules/tables/tables.module';
 import { UsersModule } from './modules/users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtTokenModule } from './jwt/jwt-token.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { JwtTokenModule } from './jwt/jwt-token.module';
       isGlobal: true,
     }),
     JwtTokenModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [
