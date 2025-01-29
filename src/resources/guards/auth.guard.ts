@@ -20,6 +20,12 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const ctx = context.switchToHttp();
+    const request = ctx.getRequest<RequestWithUser>();
+    if (request.method === 'GET') {
+      return true;
+    }
+
     const ignore = this.reflector.get<boolean>(
       'public-route',
       context.getHandler(),
@@ -27,8 +33,6 @@ export class AuthGuard implements CanActivate {
     if (ignore) {
       return true;
     }
-
-    const request = context.switchToHttp().getRequest<RequestWithUser>();
 
     const token = this.getToken(request);
     if (!token) {
@@ -55,8 +59,7 @@ export class AuthGuard implements CanActivate {
       const payload = await this.jwtTokenService.verifyToken(token);
       return payload;
     } catch (error) {
-      console.error(error);
-      throw new UnauthorizedException('Token inválido');
+      throw new UnauthorizedException(error.message);
     }
   }
 }
