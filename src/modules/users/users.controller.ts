@@ -15,13 +15,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { DefaultResponse } from 'src/lib/default-response';
 import { PasswordHashPipe } from 'src/resources/pipes/password-hash.pipe';
 import { AdminKeyGuard } from 'src/resources/guards/admin-key/admin-key.guard';
+import { AdminOnly } from 'src/resources/decorators/admin-only.decorator';
 
 @Controller('users')
+@AdminOnly()
 export class UsersController extends DefaultResponse {
   constructor(private readonly usersService: UsersService) {
     super();
   }
-  
+
   @Post()
   @UseGuards(AdminKeyGuard)
   async create(
