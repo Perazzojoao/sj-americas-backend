@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtPayload, JwtTokenService } from 'src/jwt/jwt-token.service';
 import { Request } from 'express';
+import { $Enums } from '@prisma/client';
 
 export interface RequestWithUser extends Request {
   user: JwtPayload;
@@ -22,6 +23,25 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest<RequestWithUser>();
+    const isAdminOnly = this.reflector.get<boolean>(
+      'admin-only',
+      context.getClass(),
+    );
+
+    if (isAdminOnly) {
+      const token = this.getToken(request);
+      if (!token) {
+        throw new UnauthorizedException('Authentication error');
+      }
+
+      const payload = await this.validateToken(token);
+      request.user = payload;
+
+      if (payload.role !== $Enums.Role.ADMIN) {
+        throw new UnauthorizedException('Unauthorized access');
+      }
+    }
+
     if (request.method === 'GET') {
       return true;
     }
