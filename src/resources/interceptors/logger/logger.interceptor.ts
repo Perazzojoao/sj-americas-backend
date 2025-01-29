@@ -23,7 +23,7 @@ export class LoggerInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap(() => {
         this.logger.log(
-          `${'user' in request ? ` User ID: ${request.user.sub}` : ''} - ${userAgent} ${ip}: ${request.method} ${request.url} ` +
+          `${'user' in request ? ` User ID: ${request.user.sub} - ` : ''}${userAgent} ${ip}: ${request.method} ${request.url} ` +
             yellow(`+${Date.now() - now}ms`),
           'Logger',
         );
