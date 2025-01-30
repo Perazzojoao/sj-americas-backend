@@ -12,6 +12,10 @@ export class DatabaseService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
     await this.$connect();
     const adminPassword = this.configService.get<string>('ADMIN_SECRET_KEY');
+    if (!adminPassword) {
+      throw new Error('ADMIN_SECRET_KEY environment variable is not set');
+    }
+
     const hashedPassword = await hashPassword(adminPassword);
     const time = new Date();
     await this
