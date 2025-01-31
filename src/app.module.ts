@@ -10,7 +10,8 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtTokenModule } from './jwt/jwt-token.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthGuard } from './resources/guards/auth.guard';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerBehindProxyGuard } from './resources/guards/throttler-behind-proxy/throttler-behind-proxy.guard';
 
 @Module({
   imports: [
@@ -46,7 +47,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     },
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      useClass: ThrottlerBehindProxyGuard,
     },
     ConsoleLogger,
   ],
