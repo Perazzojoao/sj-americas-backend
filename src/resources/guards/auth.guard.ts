@@ -65,7 +65,7 @@ export class AuthGuard implements CanActivate {
     return true;
   }
 
-  private getToken(request: Request): string | undefined {
+  getToken(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     if (type !== 'Bearer') {
       return;
@@ -74,7 +74,7 @@ export class AuthGuard implements CanActivate {
     return token;
   }
 
-  private async validateToken(token: string): Promise<JwtPayload> {
+  async validateToken(token: string): Promise<JwtPayload> {
     try {
       const payload = await this.jwtTokenService.verifyToken(token);
       return payload;
