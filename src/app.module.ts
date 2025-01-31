@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtTokenModule } from './jwt/jwt-token.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthGuard } from './resources/guards/auth.guard';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -22,6 +23,12 @@ import { AuthGuard } from './resources/guards/auth.guard';
     }),
     JwtTokenModule,
     AuthModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 30000,
+        limit: 10,
+      },
+    ]),
   ],
   controllers: [],
   providers: [
@@ -36,6 +43,10 @@ import { AuthGuard } from './resources/guards/auth.guard';
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
     ConsoleLogger,
   ],
