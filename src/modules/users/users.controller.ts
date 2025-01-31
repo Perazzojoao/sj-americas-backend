@@ -16,6 +16,7 @@ import { DefaultResponse } from 'src/lib/default-response';
 import { PasswordHashPipe } from 'src/resources/pipes/password-hash.pipe';
 import { AdminKeyGuard } from 'src/resources/guards/admin-key/admin-key.guard';
 import { AdminOnly } from 'src/resources/decorators/admin-only.decorator';
+import { SuperAdminOnly } from 'src/resources/decorators/super-admin-only.decorator';
 
 @Controller('users')
 @AdminOnly()
@@ -44,22 +45,22 @@ export class UsersController extends DefaultResponse {
     const response = await this.usersService.findAll();
     return this.success(response, 'User list fetched successfully');
   }
-
+  
   @Get(':id')
   async findOne(@Param('id') id: number) {
     const response = await this.usersService.findOne(id);
     return this.success(response, 'User fetched successfully');
   }
-
+  
   @Patch(':id')
-  @UseGuards(AdminKeyGuard)
+  @SuperAdminOnly()
   async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     const response = await this.usersService.update(id, updateUserDto);
     return this.success(response, 'User updated successfully');
   }
 
   @Delete(':id')
-  @UseGuards(AdminKeyGuard)
+  @SuperAdminOnly()
   async remove(@Param('id') id: number) {
     const response = await this.usersService.remove(id);
     return this.success(response, 'User deleted successfully');
