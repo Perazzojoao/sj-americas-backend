@@ -37,7 +37,7 @@ export class AuthGuard implements CanActivate {
       const payload = await this.validateToken(token);
       request.user = payload;
 
-      if (payload.role !== $Enums.Role.ADMIN) {
+      if (payload.role === $Enums.Role.USER) {
         throw new UnauthorizedException('Unauthorized access');
       }
     }
