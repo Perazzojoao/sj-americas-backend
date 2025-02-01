@@ -26,7 +26,7 @@ export class SuperAdminOnlyGuard extends AuthGuard implements CanActivate {
       return true;
     }
 
-    if (payload.role !== 'ADMIN' || payload.user_name !== 'admin') {
+    if (payload.role !== 'SUPER_ADMIN') {
       throw new ForbiddenException('Access denied');
     }
 
