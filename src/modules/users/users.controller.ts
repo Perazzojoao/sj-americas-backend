@@ -26,7 +26,6 @@ export class UsersController extends DefaultResponse {
   }
 
   @Post()
-  @UseGuards(AdminKeyGuard)
   async create(
     @Body() createUserDto: CreateUserDto,
     @Body('password', PasswordHashPipe) hash: string,
