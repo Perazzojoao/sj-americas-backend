@@ -1,11 +1,6 @@
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, MaxLength, MinLength } from 'class-validator';
 import { $Enums } from '@prisma/client';
+import { IsNotSuperAdmin } from '../decorators/is-not-super-admin.decorator';
 
 export class CreateUserDto {
   @IsNotEmpty({ message: 'User name is required' })
@@ -20,5 +15,6 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsEnum($Enums.Role, { message: 'Role must be either ADMIN or USER' })
+  @IsNotSuperAdmin()
   role: $Enums.Role;
 }
