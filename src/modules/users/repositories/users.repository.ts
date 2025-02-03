@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserEntity } from '../entities/user.entity';
 import { UsersAbstractRepository } from './users-abstract.repository';
 import { DatabaseService } from 'src/database/database.service';
@@ -62,10 +66,16 @@ export class UsersRepository implements UsersAbstractRepository {
       return await this.prisma.user.update({
         where: {
           id,
+          NOT: {
+            role: 'SUPER_ADMIN',
+          },
         },
         data: userEntity,
       });
     } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('User not found');
+      }
       console.log(error.message);
       throw new InternalServerErrorException('Failed to update user');
     }
@@ -76,6 +86,9 @@ export class UsersRepository implements UsersAbstractRepository {
       return await this.prisma.user.delete({
         where: {
           id,
+          NOT: {
+            role: 'SUPER_ADMIN',
+          },
         },
       });
     } catch (error) {
