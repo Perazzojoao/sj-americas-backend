@@ -22,6 +22,9 @@ export class TableRepository implements TableAbstractRepository {
     try {
       return await this.prisma.table.findMany({
         where: eventId ? { eventId } : {},
+        orderBy: {
+          number: 'asc',
+        }
       });
     } catch (error) {
       console.log(error.message);
@@ -36,6 +39,9 @@ export class TableRepository implements TableAbstractRepository {
           id: {
             in: idList,
           },
+        },
+        orderBy: {
+          number: 'asc',
         }
       });
     } catch (error) {
