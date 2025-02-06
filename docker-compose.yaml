@@ -7,10 +7,34 @@ services:
       - "8000:8000"
     env_file:
       - .env
-    volumes:
-      - ./prisma/db/dev.db:/app/prisma/db/dev.db:rw
     networks:
       - nestjs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+  
+  postgres:
+    container_name: postgres-sj
+    image: 'postgres'
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./prisma/db/postgres-data:/var/lib/postgresql/data
+    networks:
+      - nestjs
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
 networks:
   nestjs:
