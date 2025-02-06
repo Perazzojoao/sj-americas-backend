@@ -93,7 +93,7 @@ export class UsersService {
     };
   }
 
-  private adminCheck(currentUser: JwtPayload, targetUser: UserEntity) {
+  private adminCheck(currentUser: JwtPayload, targetUser: Partial<UserEntity>) {
     if (
       targetUser.role === 'ADMIN' &&
       currentUser.role !== 'SUPER_ADMIN' &&

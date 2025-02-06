@@ -52,7 +52,10 @@ export class UsersController extends DefaultResponse {
   @Get(':id')
   async findOne(@Param('id') id: number) {
     const response = await this.usersService.findOne(id);
-    return this.success(response, 'User fetched successfully');
+    const { user } = response;
+    const { password, ...userData } = user;
+
+    return this.success(userData, 'User fetched successfully');
   }
 
   @Patch(':id')
