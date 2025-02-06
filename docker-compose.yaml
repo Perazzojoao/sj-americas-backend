@@ -9,9 +9,9 @@ services:
       - .env
     networks:
       - nestjs
-    # depends_on:
-    #   postgres:
-    #     condition: service_healthy
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
   
   # postgres:
