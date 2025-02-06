@@ -51,7 +51,7 @@ export class UsersRepository implements UsersAbstractRepository {
         },
         include: {
           createdBy: true,
-        }
+        },
       });
     } catch (error) {
       console.log(error.message);
@@ -59,11 +59,17 @@ export class UsersRepository implements UsersAbstractRepository {
     }
   }
 
-  async findUserById(id: number): Promise<UserEntity> {
+  async findUserById(id: number): Promise<Partial<UserEntity>> {
     try {
       return await this.prisma.user.findUnique({
         where: {
           id,
+        },
+        omit: {
+          created_by: true,
+        },
+        include: {
+          createdBy: true,
         },
       });
     } catch (error) {
@@ -87,7 +93,7 @@ export class UsersRepository implements UsersAbstractRepository {
 
   async updateUser(
     userId: number,
-    userEntity: UserEntity,
+    userEntity: Partial<UserEntity>,
   ): Promise<UserEntity> {
     const { id, created_by, ...userData } = userEntity;
     try {
