@@ -31,9 +31,11 @@ export class UsersController extends DefaultResponse {
   async create(
     @Body() createUserDto: CreateUserDto,
     @Body('password', PasswordHashPipe) hash: string,
+    @Req() req: RequestWithUser,
   ) {
+    const currentUser = req.user;
     createUserDto.password = hash;
-    const response = await this.usersService.create(createUserDto);
+    const response = await this.usersService.create(createUserDto, currentUser);
     return this.success(
       response,
       'User created successfully',

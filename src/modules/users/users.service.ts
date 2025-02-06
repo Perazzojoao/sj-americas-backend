@@ -14,7 +14,7 @@ import { JwtPayload } from 'src/jwt/jwt-token.service';
 export class UsersService {
   constructor(private readonly usersRepository: UsersAbstractRepository) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto, currentUser: JwtPayload) {
     const newUser = new UserEntity(createUserDto);
     const isUserAlreadyExists = await this.usersRepository.findUserByName(
       newUser.user_name,
@@ -24,7 +24,7 @@ export class UsersService {
     }
 
     const { password, ...userCreated } =
-      await this.usersRepository.createUser(newUser);
+      await this.usersRepository.createUser(newUser, currentUser);
     const response = {
       user: userCreated,
     };
