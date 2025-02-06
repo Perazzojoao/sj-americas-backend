@@ -21,4 +21,4 @@ WORKDIR /app/dist
 
 RUN npx prisma generate
 
-CMD ["node", "./main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node ./main.js"]
