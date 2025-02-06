@@ -7,6 +7,7 @@ export interface JwtPayload {
   sub: number;
   user_name: string;
   role: $Enums.Role;
+  created_by?: number;
 }
 
 @Injectable()
@@ -18,6 +19,7 @@ export class JwtTokenService {
       sub: user.id,
       user_name: user.user_name,
       role: user.role,
+      created_by: user.created_by,
     };
     return await this.jwtService.signAsync(payload);
   }
