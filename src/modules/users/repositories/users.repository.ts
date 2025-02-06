@@ -6,15 +6,35 @@ import {
 import { UserEntity } from '../entities/user.entity';
 import { UsersAbstractRepository } from './users-abstract.repository';
 import { DatabaseService } from 'src/database/database.service';
+import { JwtPayload } from 'src/jwt/jwt-token.service';
 
 @Injectable()
 export class UsersRepository implements UsersAbstractRepository {
   constructor(private readonly prisma: DatabaseService) {}
 
-  async createUser(userEntity: UserEntity): Promise<UserEntity> {
+  async createUser(
+    userEntity: UserEntity,
+    currentUser: JwtPayload,
+  ): Promise<UserEntity> {
+    const { id, created_by, ...userData } = userEntity;
     try {
       return await this.prisma.user.create({
-        data: userEntity,
+        data: {
+          ...userData,
+          createdBy: {
+            connectOrCreate: {
+              where: {
+                id: userEntity.created_by || 0,
+                user_id: currentUser.sub,
+                user_name: currentUser.user_name,
+              },
+              create: {
+                user_id: currentUser.sub,
+                user_name: currentUser.user_name,
+              },
+            },
+          },
+        },
       });
     } catch (error) {
       console.log(error.message);
@@ -27,7 +47,11 @@ export class UsersRepository implements UsersAbstractRepository {
       return await this.prisma.user.findMany({
         omit: {
           password: true,
+          created_by: true,
         },
+        include: {
+          createdBy: true,
+        }
       });
     } catch (error) {
       console.log(error.message);
@@ -61,16 +85,23 @@ export class UsersRepository implements UsersAbstractRepository {
     }
   }
 
-  async updateUser(id: number, userEntity: UserEntity): Promise<UserEntity> {
+  async updateUser(
+    userId: number,
+    userEntity: UserEntity,
+  ): Promise<UserEntity> {
+    const { id, created_by, ...userData } = userEntity;
     try {
       return await this.prisma.user.update({
         where: {
-          id,
+          id: userId,
           NOT: {
             role: 'SUPER_ADMIN',
           },
         },
-        data: userEntity,
+        data: {
+          ...userData,
+          createdBy: {},
+        },
       });
     } catch (error) {
       if (error.code === 'P2025') {
