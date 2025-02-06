@@ -5,6 +5,14 @@
       "driver": "SQLite",
       "name": "SJ-Americas-dev",
       "database": "${workspaceFolder:sj-americas}/prisma/db/dev.db"
+    },
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "driver": "PostgreSQL",
+      "name": "SJ-Americas-prod",
+      "connectString": "postgresql://postgres:postgres@localhost:5432/sjamericas?schema=public",
+      "connectionTimeout": 100
     }
   ]
 }
