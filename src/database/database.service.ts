@@ -19,6 +19,6 @@ export class DatabaseService extends PrismaClient implements OnModuleInit {
     const hashedPassword = await hashPassword(adminPassword);
     const time = new Date();
     await this
-      .$executeRaw`INSERT INTO users (user_name, password, role, created_by, createdAt, updatedAt) VALUES ('admin',${hashedPassword}, 'SUPER_ADMIN', NULL, ${time}, ${time}) ON CONFLICT (user_name) DO NOTHING`;
+      .$executeRaw`INSERT INTO users (user_name, password, role, created_by, "createdAt", "updatedAt") VALUES ('admin',${hashedPassword}, 'SUPER_ADMIN', NULL, ${time}, ${time}) ON CONFLICT (user_name) DO NOTHING`;
   }
 }
