@@ -1,22 +1,36 @@
 services:
   nestjs:
+    container_name: nestjs
     build:
       context: .
       dockerfile: Dockerfile
     env_file:
       - .env
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?schema=public
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_SECRET_KEY=${ADMIN_SECRET_KEY}
+      - EVENT_SERVICE_URL=amqp://admin:password@rabbitmq:5672
+      - EVENT_SERVICE_QUEUE=logger
+    ports:
+      - '8000:8000'
     networks:
       - nestjs
+      - rabbitmq
     depends_on:
       postgres:
         condition: service_healthy
+      consumer:
+        condition: service_started
     restart: unless-stopped
-  
+
   postgres:
     container_name: postgres-sj
     image: 'postgres'
     env_file:
       - .env
+    ports:
+      - '5432:5432'
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -32,6 +46,73 @@ services:
       retries: 5
     restart: unless-stopped
 
+  mongo:
+    container_name: mongo
+    image: mongo:4.2.24-bionic
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: logs
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    networks:
+      - mongo
+    volumes:
+      - ./db-data/mongo/:/data/db
+    healthcheck:
+      test: ['CMD', 'mongo', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: 'rabbitmq:management-alpine'
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password
+    networks:
+      - rabbitmq
+    volumes:
+      - ./db-data/rabbitmq/:/var/lib/rabbitmq
+    healthcheck:
+      test: ['CMD', 'rabbitmqctl', 'status']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  consumer:
+    container_name: consumer
+    image: perazzojoao/logger-service:latest
+    restart: unless-stopped
+    environment:
+      QUEUE_NAME: 'logger'
+      RABBITHOST: 'amqp://admin:password@rabbitmq:5672/'
+      MONGODB_URI: 'mongodb://mongo:27017'
+      MONGODB_DATABASE: 'logs'
+      MONGODB_COLLECTION: 'logs'
+      MONGODB_USERNAME: 'admin'
+      MONGODB_PASSWORD: 'password'
+    networks:
+      - mongo
+      - rabbitmq
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
 networks:
   nestjs:
     driver: bridge
+  mongo:
+    name: mongo_network
+    driver: bridge
+    internal: true
+  rabbitmq:
+    name: rabbitmq_network
+    driver: bridge
+    internal: true
