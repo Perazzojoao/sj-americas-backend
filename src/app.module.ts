@@ -12,6 +12,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { AuthGuard } from './resources/guards/auth.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerBehindProxyGuard } from './resources/guards/throttler-behind-proxy/throttler-behind-proxy.guard';
+import { EventQueueModule } from './event-queue/event-queue.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ThrottlerBehindProxyGuard } from './resources/guards/throttler-behind-p
         limit: 10,
       },
     ]),
+    EventQueueModule,
   ],
   controllers: [],
   providers: [
