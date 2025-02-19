@@ -21,9 +21,6 @@ services:
       consumer:
         condition: service_started
     restart: unless-stopped
-    deploy:
-      mode: replicated
-      replicas: 2
 
   postgres:
     container_name: postgres-sj
@@ -103,9 +100,6 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    deploy:
-      mode: replicated
-      replicas: 3
 
 networks:
   nestjs:
