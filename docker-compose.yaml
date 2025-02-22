@@ -12,6 +12,8 @@ services:
       - ADMIN_SECRET_KEY=${ADMIN_SECRET_KEY}
       - EVENT_SERVICE_URL=amqp://admin:password@rabbitmq:5672
       - EVENT_SERVICE_QUEUE=logger
+    ports:
+      - 8000:8000
     networks:
       - nestjs
       - rabbitmq
@@ -25,6 +27,8 @@ services:
   postgres:
     container_name: postgres-sj
     image: 'postgres'
+    ports:
+      - 5432:5432
     env_file:
       - .env
     environment:
