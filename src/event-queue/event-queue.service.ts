@@ -1,6 +1,6 @@
 import { Inject, Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { catchError, lastValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, lastValueFrom, timeout } from 'rxjs';
 
 export interface ISendEvent {
   userId: number | string | undefined;
@@ -25,11 +25,13 @@ export class EventQueueService implements OnModuleInit {
       await this.queueClient.connect();
     } catch (error) {
       this.logger.error('Failed to connect to event service:', error);
-      // Não vamos lançar o erro aqui para evitar que a aplicação falhe ao iniciar
     }
   }
 
   async sendEvent(data: ISendEvent) {
+    if (data.userId === undefined) {
+      return;
+    }
     try {
       const result = this.queueClient.emit('log', data);
       await lastValueFrom(
@@ -42,8 +44,6 @@ export class EventQueueService implements OnModuleInit {
       );
     } catch (error) {
       this.logger.error('Error in sendEvent:', error);
-      // Você pode escolher relançar o erro ou não, dependendo da sua necessidade
-      // throw error;
     }
   }
 }
