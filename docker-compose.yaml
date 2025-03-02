@@ -12,8 +12,6 @@ services:
       - ADMIN_SECRET_KEY=${ADMIN_SECRET_KEY}
       - EVENT_SERVICE_URL=amqp://admin:password@rabbitmq:5672
       - EVENT_SERVICE_QUEUE=logger
-    ports:
-      - 8000:8000
     networks:
       - nestjs
       - rabbitmq
