@@ -21,7 +21,7 @@ export class EventRepository implements EventAbstractRepository {
               data: Array.from({ length: eventEntity.tableCount }).map(
                 (_, index) => ({
                   number: index + 1,
-                  seats: index < 10 ? 4 : 8,
+                  seats: index < 10 ? 4 : index < 68 ? 8 : 4,
                 }),
               ),
             },
