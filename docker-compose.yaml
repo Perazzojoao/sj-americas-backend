@@ -11,10 +11,12 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
-  
+
   postgres:
     container_name: postgres-sj
-    image: 'postgres'
+    image: postgres:16
+    ports:
+      - 5432:5432
     env_file:
       - .env
     environment:
@@ -26,7 +28,7 @@ services:
     networks:
       - nestjs
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER}']
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
