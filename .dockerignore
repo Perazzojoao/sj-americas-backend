@@ -2,7 +2,6 @@
 /test
 /dist
 
-pnpm-lock.yaml
 *.md
 *-data
 *.db

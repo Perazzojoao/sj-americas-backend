@@ -1,24 +1,30 @@
+# syntax=docker/dockerfile:1.7
+
 ARG IMAGE=node:lts-alpine
 
-FROM ${IMAGE} as builder
+FROM ${IMAGE} AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 WORKDIR /app
-COPY . .
-RUN npm install -g pnpm 
-RUN pnpm install
-RUN pnpm install prisma
-RUN pnpm prisma generate
+RUN corepack enable
 
-FROM builder as prod-build
+FROM base AS deps
+COPY package.json pnpm-lock.yaml ./
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store pnpm install --frozen-lockfile
+
+FROM deps AS build
+COPY . .
+RUN pnpm prisma generate
 RUN pnpm run build
 RUN pnpm prune --prod
 
-FROM ${IMAGE} as prod
-COPY --from=prod-build /app/dist /app/dist
-COPY --from=prod-build /app/prisma /app/dist/prisma
-COPY --from=prod-build /app/node_modules /app/node_modules
+FROM ${IMAGE} AS prod
+ENV NODE_ENV=production
+WORKDIR /app
 
-WORKDIR /app/dist
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package.json ./package.json
 
-RUN npx prisma generate
-
-CMD ["sh", "-c", "npx prisma migrate deploy && node ./main.js"]
+USER node
+CMD ["node", "dist/main.js"]
