@@ -11,6 +11,20 @@ import { EventAbstractRepository } from './event-abstract.repository';
 export class EventRepository implements EventAbstractRepository {
   constructor(private readonly prisma: DatabaseService) {}
 
+  private getErrorMessage(error: unknown): string {
+    if (error instanceof Error) return error.message;
+    return String(error);
+  }
+
+  private getErrorCode(error: unknown): string | undefined {
+    if (typeof error === 'object' && error !== null && 'code' in error) {
+      const maybeCode = (error as { code?: unknown }).code;
+      return typeof maybeCode === 'string' ? maybeCode : undefined;
+    }
+
+    return undefined;
+  }
+
   async createEvent(eventEntity: EventEntity): Promise<EventEntity> {
     try {
       const initialFourSeatCount = 10;
@@ -50,7 +64,7 @@ export class EventRepository implements EventAbstractRepository {
         },
       });
     } catch (error) {
-      console.log(error.message);
+      console.log(this.getErrorMessage(error));
       throw new InternalServerErrorException('Failed to create event');
     }
   }
@@ -59,7 +73,7 @@ export class EventRepository implements EventAbstractRepository {
     try {
       return await this.prisma.event.findMany();
     } catch (error) {
-      console.log(error.message);
+      console.log(this.getErrorMessage(error));
       throw new InternalServerErrorException('Failed to fetch event list');
     }
   }
@@ -78,7 +92,7 @@ export class EventRepository implements EventAbstractRepository {
         },
       });
     } catch (error) {
-      console.log(error.message);
+      console.log(this.getErrorMessage(error));
       throw new InternalServerErrorException('Failed to fetch event');
     }
   }
@@ -99,7 +113,7 @@ export class EventRepository implements EventAbstractRepository {
         },
       });
     } catch (error) {
-      console.log(error.message);
+      console.log(this.getErrorMessage(error));
       throw new InternalServerErrorException('Failed to update event');
     }
   }
@@ -117,7 +131,7 @@ export class EventRepository implements EventAbstractRepository {
         })),
       });
     } catch (error) {
-      console.log(error.message);
+      console.log(this.getErrorMessage(error));
       throw new InternalServerErrorException('Failed to add tables');
     }
   }
@@ -138,7 +152,7 @@ export class EventRepository implements EventAbstractRepository {
         },
       });
     } catch (error) {
-      console.log(error.message);
+      console.log(this.getErrorMessage(error));
       throw new InternalServerErrorException('Failed to remove tables');
     }
   }
@@ -151,10 +165,10 @@ export class EventRepository implements EventAbstractRepository {
         },
       });
     } catch (error) {
-      if (error.code === 'P2025') {
+      if (this.getErrorCode(error) === 'P2025') {
         throw new NotFoundException('Event not found');
       }
-      console.log(error.message);
+      console.log(this.getErrorMessage(error));
       throw new InternalServerErrorException('Failed to delete event');
     }
   }
