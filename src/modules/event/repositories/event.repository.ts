@@ -3,9 +3,9 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { EventAbstractRepository } from './event-abstract.repository';
-import { EventEntity } from '../entities/event.entity';
 import { DatabaseService } from 'src/database/database.service';
+import { EventEntity } from '../entities/event.entity';
+import { EventAbstractRepository } from './event-abstract.repository';
 
 @Injectable()
 export class EventRepository implements EventAbstractRepository {
@@ -13,6 +13,22 @@ export class EventRepository implements EventAbstractRepository {
 
   async createEvent(eventEntity: EventEntity): Promise<EventEntity> {
     try {
+      const initialFourSeatCount = 10;
+      const maxMiddleEightSeatCount = 58;
+      const extraFourSeatCount =
+        eventEntity.tableCount === 88
+          ? 20
+          : eventEntity.tableCount === 78
+            ? 10
+            : Math.max(eventEntity.tableCount - 68, 0);
+      const middleEightSeatCount = Math.min(
+        maxMiddleEightSeatCount,
+        Math.max(
+          eventEntity.tableCount - initialFourSeatCount - extraFourSeatCount,
+          0,
+        ),
+      );
+
       return await this.prisma.event.create({
         data: {
           ...eventEntity,
@@ -21,7 +37,12 @@ export class EventRepository implements EventAbstractRepository {
               data: Array.from({ length: eventEntity.tableCount }).map(
                 (_, index) => ({
                   number: index + 1,
-                  seats: index < 10 ? 4 : index < 68 ? 8 : 4,
+                  seats:
+                    index < initialFourSeatCount
+                      ? 4
+                      : index < initialFourSeatCount + middleEightSeatCount
+                        ? 8
+                        : 4,
                 }),
               ),
             },
