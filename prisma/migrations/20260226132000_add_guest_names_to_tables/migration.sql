@@ -1,0 +1,2 @@
+ALTER TABLE "tables"
+ADD COLUMN "guestNames" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];

@@ -51,6 +51,7 @@ export class EventRepository implements EventAbstractRepository {
               data: Array.from({ length: eventEntity.tableCount }).map(
                 (_, index) => ({
                   number: index + 1,
+                  guestNames: [],
                   seats:
                     index < initialFourSeatCount
                       ? 4
@@ -128,6 +129,7 @@ export class EventRepository implements EventAbstractRepository {
         data: Array.from({ length: quantity }).map((_, index) => ({
           eventId,
           number: startNumber + index + 1,
+          guestNames: [],
         })),
       });
     } catch (error) {
