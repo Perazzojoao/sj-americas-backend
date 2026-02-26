@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { DatabaseService } from 'src/database/database.service';
 import { TableEntity } from '../entities/table.entity';
 import { TableAbstractRepository } from './tables-abstract.repository';
-import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class TableRepository implements TableAbstractRepository {
@@ -24,7 +24,7 @@ export class TableRepository implements TableAbstractRepository {
         where: eventId ? { eventId } : {},
         orderBy: {
           number: 'asc',
-        }
+        },
       });
     } catch (error) {
       console.log(error.message);
@@ -42,7 +42,7 @@ export class TableRepository implements TableAbstractRepository {
         },
         orderBy: {
           number: 'asc',
-        }
+        },
       });
     } catch (error) {
       console.log(error.message);
@@ -90,6 +90,7 @@ export class TableRepository implements TableAbstractRepository {
       isTaken?: boolean;
       isPaid?: boolean;
       seats?: number;
+      updatedAt?: Date;
     },
   ): Promise<void> {
     try {

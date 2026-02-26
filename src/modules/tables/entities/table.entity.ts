@@ -4,6 +4,7 @@ export class TableEntity implements Table {
   id: number;
   number: number;
   seats: number;
+  guestNames: string[];
   owner: number | null;
   eventId: number;
   isTaken: boolean;
