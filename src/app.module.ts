@@ -1,17 +1,18 @@
 import { ConsoleLogger, Module } from '@nestjs/common';
-import { APP_INTERCEPTOR, APP_FILTER, APP_GUARD } from '@nestjs/core';
-import { HttpExceptionFilter } from './resources/filters/http-exception/http-exception.filter';
-import { LoggerInterceptor } from './resources/interceptors/logger/logger.interceptor';
+import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { AppController } from './app.controller';
 import { DatabaseModule } from './database/database.module';
+import { JwtTokenModule } from './jwt/jwt-token.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { EventModule } from './modules/event/event.module';
 import { TablesModule } from './modules/tables/tables.module';
 import { UsersModule } from './modules/users/users.module';
-import { ConfigModule } from '@nestjs/config';
-import { JwtTokenModule } from './jwt/jwt-token.module';
-import { AuthModule } from './modules/auth/auth.module';
+import { HttpExceptionFilter } from './resources/filters/http-exception/http-exception.filter';
 import { AuthGuard } from './resources/guards/auth.guard';
-import { ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerBehindProxyGuard } from './resources/guards/throttler-behind-proxy/throttler-behind-proxy.guard';
+import { LoggerInterceptor } from './resources/interceptors/logger/logger.interceptor';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { ThrottlerBehindProxyGuard } from './resources/guards/throttler-behind-p
       },
     ]),
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [
     {
       provide: APP_INTERCEPTOR,
