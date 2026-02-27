@@ -55,3 +55,10 @@ jobs:
           tags: |
             perazzojoao/sj-americas:${{ github.ref_name }}
             perazzojoao/sj-americas:latest
+
+      - name: Trigger Coolify deploy
+        if: steps.validate_tag.outputs.is_main_tag == 'true' && success()
+        run: |
+          curl --fail --show-error --silent \
+            -H "Authorization: ${{ secrets.COOLIFY_SECRET }}" \
+            "https://coolify.perazzojoao.online/api/v1/deploy?uuid=fs4gsgw4c0gkwkkwosggowk0&force=false"
